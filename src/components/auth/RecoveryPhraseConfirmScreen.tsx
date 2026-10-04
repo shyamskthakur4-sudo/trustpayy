@@ -95,7 +95,7 @@ export const RecoveryPhraseConfirmScreen: React.FC<RecoveryPhraseConfirmScreenPr
             <ArrowLeft size={18} />
           </button>
           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--tp-emerald)', letterSpacing: '0.05em' }}>
-            STEP 2 OF 2
+            STEP 2 OF 3
           </span>
           <div style={{ width: '36px' }} />
         </div>

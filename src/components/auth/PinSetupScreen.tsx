@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Lock, Check, Fingerprint, ArrowRight } from '../common/Icons';
+import { Lock, Check, Fingerprint, ArrowRight, ArrowLeft } from '../common/Icons';
 import { TrustPayStore } from '../../services/storage';
 import { useToast } from '../common/Toast';
 
 interface PinSetupScreenProps {
-  onComplete: () => void;
+  onComplete: (pin: string, enableBiometrics: boolean) => void;
+  onBack?: () => void;
   onSkip?: () => void;
 }
 
-export const PinSetupScreen: React.FC<PinSetupScreenProps> = ({ onComplete, onSkip }) => {
+export const PinSetupScreen: React.FC<PinSetupScreenProps> = ({ onComplete, onBack, onSkip }) => {
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [step, setStep] = useState<'create' | 'confirm'>('create');
@@ -38,18 +39,20 @@ export const PinSetupScreen: React.FC<PinSetupScreenProps> = ({ onComplete, onSk
         setConfirmPin(next);
         if (next.length === 6) {
           if (next === pin) {
-            TrustPayStore.setPin(pin);
-            const user = TrustPayStore.getUser();
-            if (user && enableBiometrics) {
-              TrustPayStore.updateUser({
-                security_settings: {
-                  ...user.security_settings,
-                  biometric_enabled: true,
-                },
-              });
+            const rawUser = TrustPayStore.getRawUser();
+            if (rawUser) {
+              TrustPayStore.setPin(pin);
+              if (enableBiometrics) {
+                TrustPayStore.updateUser({
+                  security_settings: {
+                    ...rawUser.security_settings,
+                    biometric_enabled: true,
+                  },
+                });
+              }
             }
             showToast('Security PIN successfully configured!', 'success');
-            onComplete();
+            onComplete(pin, enableBiometrics);
           } else {
             setErrorMsg('PINs do not match. Please try again.');
             setTimeout(() => {
@@ -85,6 +88,33 @@ export const PinSetupScreen: React.FC<PinSetupScreenProps> = ({ onComplete, onSk
       }}
     >
       <div>
+        {onBack && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <button
+              type="button"
+              onClick={onBack}
+              className="tp-pressable"
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--tp-border-subtle)',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFF',
+              }}
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--tp-emerald)', letterSpacing: '0.05em' }}>
+              STEP 3 OF 3
+            </span>
+            <div style={{ width: '36px' }} />
+          </div>
+        )}
+
         <div
           style={{
             width: '52px',

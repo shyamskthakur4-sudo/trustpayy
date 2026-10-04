@@ -6,7 +6,7 @@ import {
   UserAccount,
   WalletNetwork,
 } from './types';
-import { TrustPayStore, subscribeToStore } from './services/storage';
+import { TrustPayStore, subscribeToStore, generateMnemonic } from './services/storage';
 import { ToastProvider } from './components/common/Toast';
 import { Header } from './components/common/Header';
 import { BottomNav, NavTab } from './components/common/BottomNav';
@@ -79,7 +79,9 @@ export const AppContent: React.FC = () => {
   // AUTHENTICATION FLOW HANDLERS
   // ---------------------------------------------------------
   const handleStartCreateWallet = () => {
-    const { mnemonic } = TrustPayStore.createUser();
+    // Generate fresh BIP-39 mnemonic in-memory ONLY.
+    // Do NOT write to localStorage or create user until phrase is verified and MPIN is set!
+    const mnemonic = generateMnemonic(12);
     setGeneratedMnemonic(mnemonic);
     setAuthView('backup_phrase');
   };
@@ -89,18 +91,46 @@ export const AppContent: React.FC = () => {
   };
 
   const handlePhraseVerificationSuccess = () => {
-    TrustPayStore.confirmPhraseBackedUp();
     setAuthView('pin_setup');
   };
 
-  const handlePinSetupComplete = () => {
-    setAuthView(null);
-    setActiveTab('home');
+  const handlePinSetupComplete = (pin: string, enableBiometrics: boolean) => {
+    // If pending mnemonic exists, finalize creation of fresh wallet
+    if (generatedMnemonic && generatedMnemonic.length === 12) {
+      const newUser = TrustPayStore.createWallet(generatedMnemonic, pin, enableBiometrics);
+      setUser(newUser);
+      setGeneratedMnemonic([]);
+      setAuthView(null);
+      setActiveTab('home');
+    } else {
+      // If setting PIN for restored wallet
+      const existing = TrustPayStore.getRawUser();
+      if (existing) {
+        TrustPayStore.setPin(pin);
+        if (enableBiometrics) {
+          TrustPayStore.updateUser({
+            security_settings: {
+              ...existing.security_settings,
+              biometric_enabled: true,
+            },
+          });
+        }
+        setUser(TrustPayStore.getUser());
+      }
+      setAuthView(null);
+      setActiveTab('home');
+    }
   };
 
   const handleRestoreWalletSuccess = () => {
-    setAuthView(null);
-    setActiveTab('home');
+    const rawUser = TrustPayStore.getRawUser();
+    if (rawUser && !rawUser.security_settings.pin_enabled) {
+      setAuthView('pin_setup');
+    } else {
+      setUser(TrustPayStore.getUser());
+      setAuthView(null);
+      setActiveTab('home');
+    }
   };
 
   const handleLockWallet = () => {
@@ -178,7 +208,10 @@ export const AppContent: React.FC = () => {
             <RecoveryPhraseBackupScreen
               mnemonic={generatedMnemonic}
               onProceedToVerification={handlePhraseBackupProceed}
-              onBack={() => setAuthView('welcome')}
+              onBack={() => {
+                setAuthView('welcome');
+                setGeneratedMnemonic([]);
+              }}
             />
           ) : authView === 'confirm_phrase' ? (
             <RecoveryPhraseConfirmScreen
@@ -189,7 +222,13 @@ export const AppContent: React.FC = () => {
           ) : authView === 'pin_setup' ? (
             <PinSetupScreen
               onComplete={handlePinSetupComplete}
-              onSkip={handlePinSetupComplete}
+              onBack={() => {
+                if (generatedMnemonic.length === 12) {
+                  setAuthView('confirm_phrase');
+                } else {
+                  setAuthView('welcome');
+                }
+              }}
             />
           ) : authView === 'restore_wallet' ? (
             <RestoreWalletScreen

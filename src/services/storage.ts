@@ -97,13 +97,19 @@ const purgeLegacyDemoData = () => {
     const rawUser = localStorage.getItem(STORAGE_KEYS.USER);
     if (rawUser) {
       const user: UserAccount = JSON.parse(rawUser);
-      const rawDep = localStorage.getItem(STORAGE_KEYS.DEPOSITS);
-      const remainingDeposits: DepositOrder[] = rawDep ? JSON.parse(rawDep) : [];
-      const hasRealVerifiedDeposits = remainingDeposits.some((d) => d.status === 'verified');
-      if (!hasRealVerifiedDeposits && (user.balance_usdt === 1250 || user.balance_usdt === 750 || user.is_demo_mode)) {
-        user.balance_usdt = 0.0;
-        user.is_demo_mode = false;
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+      // Auto-purge any unfinalized wallet created prematurely without backed-up phrase or MPIN
+      if (!user.security_settings?.phrase_backed_up || !user.security_settings?.pin_enabled) {
+        localStorage.removeItem(STORAGE_KEYS.USER);
+        localStorage.removeItem(STORAGE_KEYS.APP_LOCKED);
+      } else {
+        const rawDep = localStorage.getItem(STORAGE_KEYS.DEPOSITS);
+        const remainingDeposits: DepositOrder[] = rawDep ? JSON.parse(rawDep) : [];
+        const hasRealVerifiedDeposits = remainingDeposits.some((d) => d.status === 'verified');
+        if (!hasRealVerifiedDeposits && (user.balance_usdt === 1250 || user.balance_usdt === 750 || user.is_demo_mode)) {
+          user.balance_usdt = 0.0;
+          user.is_demo_mode = false;
+          localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+        }
       }
     }
 
@@ -134,7 +140,7 @@ export class TrustPayStore {
   // ----------------------------------------------------
   // USER & AUTHENTICATION
   // ----------------------------------------------------
-  static getUser(): UserAccount | null {
+  static getRawUser(): UserAccount | null {
     const raw = localStorage.getItem(STORAGE_KEYS.USER);
     if (!raw) return null;
     try {
@@ -144,9 +150,23 @@ export class TrustPayStore {
     }
   }
 
-  static createUser(providedMnemonic?: string[]): { user: UserAccount; mnemonic: string[] } {
-    const mnemonic = providedMnemonic || generateMnemonic(12);
+  static getUser(): UserAccount | null {
+    const user = this.getRawUser();
+    if (!user) return null;
+    // Require fully verified and secured wallet (must have confirmed backup phrase and set MPIN)
+    if (!user.security_settings?.phrase_backed_up || !user.security_settings?.pin_enabled) {
+      return null;
+    }
+    return user;
+  }
+
+  static createWallet(
+    mnemonic: string[],
+    pin: string,
+    enableBiometrics: boolean = true
+  ): UserAccount {
     const accountNum = Math.floor(100000 + Math.random() * 900000);
+    const pinHash = btoa(`tp_salt_${pin}_secure`);
     const newUser: UserAccount = {
       id: crypto.randomUUID ? crypto.randomUUID() : `usr-${Date.now()}`,
       account_id: `TP-${accountNum}`,
@@ -154,9 +174,10 @@ export class TrustPayStore {
       status: 'active',
       balance_usdt: 0.0, // Fresh clean wallet: 0.00 USDT
       security_settings: {
-        pin_enabled: false,
-        biometric_enabled: false,
-        phrase_backed_up: false,
+        pin_enabled: true,
+        pin_hash: pinHash,
+        biometric_enabled: enableBiometrics,
+        phrase_backed_up: true,
         last_login: new Date().toISOString(),
         recovery_phrase: mnemonic,
       },
@@ -174,7 +195,14 @@ export class TrustPayStore {
     this.seedInitialUserData(newUser.id);
 
     notifyListeners();
-    return { user: newUser, mnemonic };
+    return newUser;
+  }
+
+  static createUser(providedMnemonic?: string[]): { user: UserAccount; mnemonic: string[] } {
+    const mnemonic = providedMnemonic || generateMnemonic(12);
+    // Legacy fallback, creates a wallet with default pin 000000 if directly called
+    const user = this.createWallet(mnemonic, '000000', false);
+    return { user, mnemonic };
   }
 
   static restoreUser(mnemonicWords: string[]): { success: boolean; user?: UserAccount; error?: string } {

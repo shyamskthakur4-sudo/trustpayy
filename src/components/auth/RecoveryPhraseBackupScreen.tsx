@@ -51,7 +51,7 @@ export const RecoveryPhraseBackupScreen: React.FC<RecoveryPhraseBackupScreenProp
             <ArrowLeft size={18} />
           </button>
           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--tp-emerald)', letterSpacing: '0.05em' }}>
-            STEP 1 OF 2
+            STEP 1 OF 3
           </span>
           <div style={{ width: '36px' }} />
         </div>
