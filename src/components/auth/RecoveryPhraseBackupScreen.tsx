@@ -24,12 +24,10 @@ export const RecoveryPhraseBackupScreen: React.FC<RecoveryPhraseBackupScreenProp
   return (
     <div
       style={{
-        minHeight: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '24px',
-        background: 'var(--tp-bg-app)',
       }}
     >
       <div>
@@ -72,7 +70,7 @@ export const RecoveryPhraseBackupScreen: React.FC<RecoveryPhraseBackupScreenProp
             border: '1px solid rgba(239, 68, 68, 0.25)',
             borderRadius: 'var(--tp-radius-md)',
             padding: '12px 14px',
-            marginBottom: '20px',
+            marginBottom: '18px',
             display: 'flex',
             gap: '12px',
           }}
@@ -87,18 +85,18 @@ export const RecoveryPhraseBackupScreen: React.FC<RecoveryPhraseBackupScreenProp
         <div
           style={{
             position: 'relative',
-            background: 'var(--tp-bg-surface)',
+            background: 'rgba(0, 0, 0, 0.35)',
             border: '1px solid var(--tp-border-light)',
             borderRadius: 'var(--tp-radius-lg)',
-            padding: '18px',
+            padding: '14px 10px',
             marginBottom: '16px',
+            boxSizing: 'border-box',
+            overflow: 'hidden',
           }}
         >
           <div
+            className="tp-phrase-grid"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '10px',
               filter: isRevealed ? 'none' : 'blur(7px)',
               transition: 'filter 0.25s ease',
               userSelect: isRevealed ? 'text' : 'none',
@@ -107,34 +105,12 @@ export const RecoveryPhraseBackupScreen: React.FC<RecoveryPhraseBackupScreenProp
             {mnemonic.map((word, idx) => (
               <div
                 key={idx}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid var(--tp-border-subtle)',
-                  borderRadius: 'var(--tp-radius-sm)',
-                  padding: '8px 10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
+                className="tp-phrase-chip"
               >
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: 'var(--tp-text-muted)',
-                    width: '18px',
-                  }}
-                >
+                <span className="tp-phrase-num">
                   {idx + 1}.
                 </span>
-                <span
-                  style={{
-                    fontSize: '13.5px',
-                    fontWeight: 600,
-                    color: '#FFF',
-                    letterSpacing: '0.02em',
-                  }}
-                >
+                <span className="tp-phrase-text">
                   {word}
                 </span>
               </div>

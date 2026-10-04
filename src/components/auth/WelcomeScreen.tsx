@@ -18,13 +18,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   return (
     <div
       style={{
-        minHeight: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '36px 24px 24px',
         textAlign: 'center',
-        background: 'radial-gradient(circle at 50% 10%, rgba(0, 229, 153, 0.12) 0%, rgba(6, 9, 15, 0.98) 70%)',
       }}
     >
       {/* Top Brand Hero */}

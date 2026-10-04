@@ -141,10 +141,8 @@ export const ViewRecoveryPhraseModal: React.FC<ViewRecoveryPhraseModalProps> = (
               }}
             >
               <div
+                className="tp-phrase-grid"
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '8px',
                   filter: isRevealed ? 'none' : 'blur(7px)',
                   transition: 'filter 0.2s ease',
                   userSelect: isRevealed ? 'text' : 'none',
@@ -153,17 +151,10 @@ export const ViewRecoveryPhraseModal: React.FC<ViewRecoveryPhraseModalProps> = (
                 {phrase.map((w, idx) => (
                   <div
                     key={idx}
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      borderRadius: 'var(--tp-radius-sm)',
-                      padding: '6px 8px',
-                      display: 'flex',
-                      gap: '6px',
-                      fontSize: '12.5px',
-                    }}
+                    className="tp-phrase-chip"
                   >
-                    <span style={{ color: 'var(--tp-text-muted)', fontSize: '10.5px' }}>{idx + 1}.</span>
-                    <span style={{ color: '#FFF', fontWeight: 600 }}>{w}</span>
+                    <span className="tp-phrase-num">{idx + 1}.</span>
+                    <span className="tp-phrase-text">{w}</span>
                   </div>
                 ))}
               </div>

@@ -546,6 +546,7 @@ input, textarea, select {
   justify-content: center;
   padding: 32px 16px;
   background: radial-gradient(circle at 50% 15%, rgba(0, 229, 153, 0.08) 0%, #06090F 70%);
+  box-sizing: border-box;
 }
 
 .tp-auth-card {
@@ -554,15 +555,91 @@ input, textarea, select {
   background: rgba(14, 21, 34, 0.88);
   border: 1px solid var(--tp-border-light);
   border-radius: var(--tp-radius-xl);
-  padding: 36px 28px;
+  padding: 32px 24px;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 229, 153, 0.1);
   backdrop-filter: blur(24px);
+  box-sizing: border-box;
 }
 
 @media (max-width: 480px) {
+  .tp-auth-page {
+    padding: 16px 10px;
+    align-items: flex-start;
+  }
   .tp-auth-card {
-    padding: 24px 18px;
+    padding: 20px 14px;
     border-radius: var(--tp-radius-lg);
+    background: rgba(14, 21, 34, 0.96);
+  }
+}
+
+/* 12-Word Recovery Phrase Grid */
+.tp-phrase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 420px) {
+  .tp-phrase-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+
+@media (max-width: 350px) {
+  .tp-phrase-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+
+.tp-phrase-chip {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--tp-border-subtle);
+  border-radius: var(--tp-radius-sm);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .tp-phrase-chip {
+    padding: 7px 5px;
+    gap: 4px;
+  }
+}
+
+.tp-phrase-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tp-text-muted);
+  flex-shrink: 0;
+  width: 16px;
+  text-align: right;
+  margin-right: 2px;
+}
+
+.tp-phrase-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFF;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .tp-phrase-text {
+    font-size: 12px;
   }
 }
 

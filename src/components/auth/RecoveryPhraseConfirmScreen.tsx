@@ -68,12 +68,10 @@ export const RecoveryPhraseConfirmScreen: React.FC<RecoveryPhraseConfirmScreenPr
   return (
     <div
       style={{
-        minHeight: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '24px',
-        background: 'var(--tp-bg-app)',
       }}
     >
       <div>

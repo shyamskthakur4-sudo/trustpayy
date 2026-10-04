@@ -77,12 +77,10 @@ export const PinSetupScreen: React.FC<PinSetupScreenProps> = ({ onComplete, onSk
   return (
     <div
       style={{
-        minHeight: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '32px 24px 24px',
-        background: 'var(--tp-bg-app)',
         textAlign: 'center',
       }}
     >

@@ -64,12 +64,10 @@ export const AppLockScreen: React.FC<AppLockScreenProps> = ({ onUnlocked, onForg
   return (
     <div
       style={{
-        minHeight: '100%',
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '36px 24px 24px',
-        background: 'radial-gradient(circle at 50% 15%, rgba(0, 229, 153, 0.08) 0%, rgba(6, 9, 15, 0.98) 70%)',
         textAlign: 'center',
       }}
     >
