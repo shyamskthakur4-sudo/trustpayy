@@ -335,7 +335,13 @@ export class TrustPayStore {
       return INITIAL_EXCHANGE_SETTINGS;
     }
     try {
-      return JSON.parse(raw);
+      const parsed: ExchangeSettings = JSON.parse(raw);
+      // Automatically migrate legacy 107 rate to 109 rate
+      if (parsed.exchange_rate === 107) {
+        parsed.exchange_rate = 109;
+        localStorage.setItem(STORAGE_KEYS.EXCHANGE_SETTINGS, JSON.stringify(parsed));
+      }
+      return parsed;
     } catch {
       return INITIAL_EXCHANGE_SETTINGS;
     }
@@ -586,7 +592,7 @@ export class TrustPayStore {
 
   static createWithdrawal(params: {
     userId: string;
-    method: 'UPI' | 'IMPS';
+    method: 'UPI' | 'IMPS' | 'CDM';
     amountUsdt: number;
     payoutDetails: any;
   }): { success: boolean; withdrawal?: WithdrawalOrder; error?: string } {

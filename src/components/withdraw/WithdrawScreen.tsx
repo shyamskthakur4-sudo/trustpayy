@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowUpRight, Zap, Building2, Smartphone, AlertCircle, ShieldCheck, ChevronRight } from '../common/Icons';
+import { ArrowLeft, ArrowUpRight, Zap, Building2, Smartphone, AlertCircle, ShieldCheck, ChevronRight, Banknote } from '../common/Icons';
 import { ExchangeSettings, PayoutDetails, UserAccount } from '../../types';
 import { TrustPayStore } from '../../services/storage';
 import { useToast } from '../common/Toast';
@@ -19,7 +19,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   onBack,
   onWithdrawCreated,
 }) => {
-  const [method, setMethod] = useState<'UPI' | 'IMPS'>('UPI');
+  const [method, setMethod] = useState<'UPI' | 'IMPS' | 'CDM'>('UPI');
   const [amountUsdt, setAmountUsdt] = useState<string>(
     initialAmountUsdt && initialAmountUsdt > 0
       ? initialAmountUsdt.toString()
@@ -37,6 +37,13 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
   const [accountNumber, setAccountNumber] = useState('');
   const [ifscCode, setIfscCode] = useState('');
   const [bankName, setBankName] = useState('');
+
+  // CDM Cash Deposit Fields
+  const [cdmHolderName, setCdmHolderName] = useState('');
+  const [cdmAccountNumber, setCdmAccountNumber] = useState('');
+  const [cdmBankName, setCdmBankName] = useState('');
+  const [cdmMobileNumber, setCdmMobileNumber] = useState('');
+  const [cdmBranchCity, setCdmBranchCity] = useState('');
 
   // Confirmation Modal
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -69,6 +76,23 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
       }
       if (!upiId.trim() || !upiId.includes('@')) {
         setErrorMsg('Please enter a valid UPI ID (e.g. user@okhdfcbank).');
+        return false;
+      }
+    } else if (method === 'CDM') {
+      if (!cdmHolderName.trim()) {
+        setErrorMsg('Please enter the account holder name for cash deposit.');
+        return false;
+      }
+      if (!cdmAccountNumber.trim() || cdmAccountNumber.length < 8) {
+        setErrorMsg('Please enter a valid bank account number.');
+        return false;
+      }
+      if (!cdmBankName.trim()) {
+        setErrorMsg('Please enter the bank name for CDM deposit.');
+        return false;
+      }
+      if (!cdmMobileNumber.trim() || cdmMobileNumber.length < 10) {
+        setErrorMsg('Please enter a valid 10-digit mobile number linked to the account.');
         return false;
       }
     } else {
@@ -109,6 +133,15 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
             type: 'UPI',
             account_holder_name: upiHolderName.trim(),
             upi_id: upiId.trim(),
+          }
+        : method === 'CDM'
+        ? {
+            type: 'CDM',
+            account_holder_name: cdmHolderName.trim(),
+            bank_account_number: cdmAccountNumber.trim(),
+            bank_name: cdmBankName.trim(),
+            mobile_number: cdmMobileNumber.trim(),
+            branch_city: cdmBranchCity.trim() || undefined,
           }
         : {
             type: 'IMPS',
@@ -199,12 +232,12 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
         </div>
       </div>
 
-      {/* Payout Method Toggle: UPI vs IMPS */}
+      {/* Payout Method Toggle: UPI vs IMPS vs CDM */}
       <div>
         <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--tp-text-secondary)', marginBottom: '8px' }}>
           Select Payout Rail
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' }}>
           <button
             type="button"
             onClick={() => setMethod('UPI')}
@@ -213,14 +246,15 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
               background: method === 'UPI' ? 'rgba(0, 229, 153, 0.15)' : 'var(--tp-bg-surface)',
               border: method === 'UPI' ? '1px solid #00E599' : '1px solid var(--tp-border-subtle)',
               borderRadius: 'var(--tp-radius-md)',
-              padding: '14px',
+              padding: '12px 6px',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '10px',
+              gap: '6px',
               color: method === 'UPI' ? '#00E599' : 'var(--tp-text-secondary)',
               fontWeight: 700,
-              fontSize: '14px',
+              fontSize: '12.5px',
               cursor: 'pointer',
             }}
           >
@@ -236,19 +270,44 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
               background: method === 'IMPS' ? 'rgba(56, 189, 248, 0.15)' : 'var(--tp-bg-surface)',
               border: method === 'IMPS' ? '1px solid #38BDF8' : '1px solid var(--tp-border-subtle)',
               borderRadius: 'var(--tp-radius-md)',
-              padding: '14px',
+              padding: '12px 6px',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '10px',
+              gap: '6px',
               color: method === 'IMPS' ? '#38BDF8' : 'var(--tp-text-secondary)',
               fontWeight: 700,
-              fontSize: '14px',
+              fontSize: '12.5px',
               cursor: 'pointer',
             }}
           >
             <Building2 size={18} />
-            <span>IMPS Bank Transfer</span>
+            <span>IMPS Bank</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMethod('CDM')}
+            className="tp-pressable"
+            style={{
+              background: method === 'CDM' ? 'rgba(245, 158, 11, 0.15)' : 'var(--tp-bg-surface)',
+              border: method === 'CDM' ? '1px solid #F59E0B' : '1px solid var(--tp-border-subtle)',
+              borderRadius: 'var(--tp-radius-md)',
+              padding: '12px 6px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              color: method === 'CDM' ? '#F59E0B' : 'var(--tp-text-secondary)',
+              fontWeight: 700,
+              fontSize: '12.5px',
+              cursor: 'pointer',
+            }}
+          >
+            <Banknote size={18} />
+            <span>CDM Cash</span>
           </button>
         </div>
       </div>
@@ -410,6 +469,84 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
           </>
         )}
 
+        {/* CDM Cash Deposit Fields */}
+        {method === 'CDM' && (
+          <>
+            <div
+              style={{
+                background: 'rgba(245, 158, 11, 0.08)',
+                border: '1px solid rgba(245, 158, 11, 0.25)',
+                borderRadius: 'var(--tp-radius-md)',
+                padding: '10px 12px',
+                marginBottom: '16px',
+                fontSize: '12px',
+                color: '#FCD34D',
+                lineHeight: 1.45,
+              }}
+            >
+              <strong>CDM Cash Deposit:</strong> Cash will be directly deposited via Bank Cash Deposit Machine into your bank account. No online netbanking trail.
+            </div>
+
+            <div className="tp-input-group">
+              <label className="tp-input-label">Account Holder Name</label>
+              <input
+                type="text"
+                value={cdmHolderName}
+                onChange={(e) => setCdmHolderName(e.target.value)}
+                placeholder="e.g. Ramesh Kumar"
+                className="tp-input-box"
+              />
+            </div>
+
+            <div className="tp-input-group">
+              <label className="tp-input-label">Bank Account Number (for Cash Deposit)</label>
+              <input
+                type="text"
+                value={cdmAccountNumber}
+                onChange={(e) => setCdmAccountNumber(e.target.value)}
+                placeholder="e.g. 30891829102"
+                className="tp-input-box tp-num"
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="tp-input-group">
+                <label className="tp-input-label">Bank Name</label>
+                <input
+                  type="text"
+                  value={cdmBankName}
+                  onChange={(e) => setCdmBankName(e.target.value)}
+                  placeholder="e.g. SBI, HDFC, ICICI, Axis"
+                  className="tp-input-box"
+                />
+              </div>
+
+              <div className="tp-input-group">
+                <label className="tp-input-label">Linked Mobile No.</label>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={cdmMobileNumber}
+                  onChange={(e) => setCdmMobileNumber(e.target.value.replace(/\D/g, ''))}
+                  placeholder="e.g. 9876543210"
+                  className="tp-input-box tp-num"
+                />
+              </div>
+            </div>
+
+            <div className="tp-input-group">
+              <label className="tp-input-label">City / Branch Location (Optional)</label>
+              <input
+                type="text"
+                value={cdmBranchCity}
+                onChange={(e) => setCdmBranchCity(e.target.value)}
+                placeholder="e.g. Mumbai, Delhi, Bengaluru"
+                className="tp-input-box"
+              />
+            </div>
+          </>
+        )}
+
         {/* Inline Error Message */}
         {errorMsg && (
           <div className="tp-error-text" style={{ marginBottom: '14px' }}>
@@ -434,8 +571,9 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
         >
           <Zap size={15} color="#F59E0B" style={{ flexShrink: 0, marginTop: '1px' }} />
           <span>
-            Target settlement is ~15 minutes. Processing depends on banking rail availability,
-            network conditions, and compliance clearance.
+            {method === 'CDM'
+              ? 'Target settlement is ~15-30 minutes via nearest Bank CDM Cash Deposit Machine. SMS receipt confirmation sent to your linked mobile.'
+              : 'Target settlement is ~15 minutes. Processing depends on banking rail availability, network conditions, and compliance clearance.'}
           </span>
         </div>
 
@@ -495,20 +633,26 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: 'var(--tp-text-secondary)' }}>Payout Method</span>
-                <span style={{ fontWeight: 700, color: '#38BDF8' }}>{method}</span>
+                <span style={{ fontWeight: 700, color: method === 'UPI' ? '#00E599' : method === 'CDM' ? '#F59E0B' : '#38BDF8' }}>
+                  {method === 'CDM' ? 'CDM Cash Deposit' : method === 'UPI' ? 'UPI Instant' : 'IMPS Bank Transfer'}
+                </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: 'var(--tp-text-secondary)' }}>Account Holder</span>
                 <span style={{ fontWeight: 600, color: '#FFF' }}>
-                  {method === 'UPI' ? upiHolderName : impsHolderName}
+                  {method === 'UPI' ? upiHolderName : method === 'CDM' ? cdmHolderName : impsHolderName}
                 </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: 'var(--tp-text-secondary)' }}>Destination</span>
                 <span className="tp-num" style={{ fontWeight: 600, color: '#FFF' }}>
-                  {method === 'UPI' ? upiId : `${bankName} (${accountNumber.slice(-4)})`}
+                  {method === 'UPI'
+                    ? upiId
+                    : method === 'CDM'
+                    ? `${cdmBankName} (${cdmAccountNumber.slice(-4)}) • ${cdmMobileNumber}`
+                    : `${bankName} (${accountNumber.slice(-4)})`}
                 </span>
               </div>
 

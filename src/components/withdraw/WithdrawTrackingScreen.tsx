@@ -256,6 +256,31 @@ export const WithdrawTrackingScreen: React.FC<WithdrawTrackingScreenProps> = ({
                 {order.payout_details.upi_id}
               </span>
             </div>
+          ) : order.payout_details.type === 'CDM' ? (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--tp-text-secondary)' }}>
+                <span>CDM Bank</span>
+                <span style={{ color: '#FFF', fontWeight: 600 }}>{order.payout_details.bank_name}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--tp-text-secondary)' }}>
+                <span>Account Number</span>
+                <span className="tp-num" style={{ color: '#FFF', fontWeight: 600 }}>
+                  {order.payout_details.bank_account_number}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--tp-text-secondary)' }}>
+                <span>Linked Mobile</span>
+                <span className="tp-num" style={{ color: '#F59E0B', fontWeight: 600 }}>
+                  {order.payout_details.mobile_number}
+                </span>
+              </div>
+              {order.payout_details.branch_city && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--tp-text-secondary)' }}>
+                  <span>City / Branch</span>
+                  <span style={{ color: '#FFF', fontWeight: 600 }}>{order.payout_details.branch_city}</span>
+                </div>
+              )}
+            </>
           ) : (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--tp-text-secondary)' }}>

@@ -368,4 +368,13 @@ export const LogOut: React.FC<IconProps> = ({ size = 24, color = 'currentColor',
   </svg>
 );
 
+export const Banknote: React.FC<IconProps> = ({ size = 24, color = 'currentColor', strokeWidth = 2, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect width="20" height="12" x="2" y="6" rx="2" />
+    <circle cx="12" cy="12" r="2" />
+    <path d="M6 12h.01M18 12h.01" />
+  </svg>
+);
+
+
 

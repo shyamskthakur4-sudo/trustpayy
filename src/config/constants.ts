@@ -4,7 +4,7 @@ export const APP_NAME = 'TrustPay';
 export const APP_TAGLINE = 'Institutional-grade USDT to INR instant settlement';
 
 export const INITIAL_EXCHANGE_SETTINGS: ExchangeSettings = {
-  exchange_rate: 107, // 1 USDT = ₹107 INR
+  exchange_rate: 109, // 1 USDT = ₹109 INR
   minimum_deposit: 500, // 500 USDT minimum
   processing_target: 'Approximately 15 minutes',
   platform_fee_percent: 0,

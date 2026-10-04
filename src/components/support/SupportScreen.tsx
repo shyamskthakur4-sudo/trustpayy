@@ -33,7 +33,7 @@ export const SupportScreen: React.FC<SupportScreenProps> = ({
     },
     {
       q: 'How long does a withdrawal to INR take?',
-      a: 'Our target settlement time is approximately 15 minutes. However, settlement depends on recipient banking clearance (IMPS/UPI rails), IFSC validity, and network verification.',
+      a: 'Our target settlement time is approximately 15 minutes. We support UPI Instant, IMPS Bank Transfer, and CDM Direct Cash Deposit into your bank account.',
     },
     {
       q: 'What networks can I use to deposit USDT?',
@@ -41,7 +41,7 @@ export const SupportScreen: React.FC<SupportScreenProps> = ({
     },
     {
       q: 'How is the exchange rate calculated?',
-      a: 'TrustPay guarantees zero hidden fees. The rate displayed (e.g. ₹107 / USDT) is the final settlement rate applied directly to your transfer.',
+      a: 'TrustPay guarantees zero hidden fees. The rate displayed (e.g. ₹109 / USDT) is the final settlement rate applied directly to your transfer.',
     },
     {
       q: 'Can TrustPay restore my 12-word recovery phrase if I lose it?',

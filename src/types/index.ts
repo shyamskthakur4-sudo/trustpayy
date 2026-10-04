@@ -14,7 +14,7 @@ export interface WalletNetwork {
 }
 
 export interface ExchangeSettings {
-  exchange_rate: number; // e.g. 107 INR per USDT
+  exchange_rate: number; // e.g. 109 INR per USDT
   minimum_deposit: number; // e.g. 500 USDT
   processing_target: string; // "Approximately 15 minutes"
   platform_fee_percent: number; // 0
@@ -82,12 +82,21 @@ export interface ImpsPayoutDetails {
   bank_name: string;
 }
 
-export type PayoutDetails = UpiPayoutDetails | ImpsPayoutDetails;
+export interface CdmPayoutDetails {
+  type: 'CDM';
+  account_holder_name: string;
+  bank_account_number: string;
+  bank_name: string;
+  mobile_number: string;
+  branch_city?: string;
+}
+
+export type PayoutDetails = UpiPayoutDetails | ImpsPayoutDetails | CdmPayoutDetails;
 
 export interface WithdrawalOrder {
   id: string; // TP-WTH-XXXXX
   user_id: string;
-  method: 'UPI' | 'IMPS';
+  method: 'UPI' | 'IMPS' | 'CDM';
   amount_usdt: number;
   amount_inr: number;
   exchange_rate: number;

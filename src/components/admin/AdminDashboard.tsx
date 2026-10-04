@@ -948,10 +948,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
                     <div>Account Holder: <strong>{w.payout_details.account_holder_name}</strong></div>
                     {w.payout_details.type === 'UPI' ? (
                       <div>UPI ID: <strong>{w.payout_details.upi_id}</strong></div>
+                    ) : w.payout_details.type === 'CDM' ? (
+                      <div>CDM Bank: <strong>{w.payout_details.bank_name}</strong> • A/C: <strong>{w.payout_details.bank_account_number}</strong> • Mobile: <strong>{w.payout_details.mobile_number}</strong>{w.payout_details.branch_city ? ` • City: ${w.payout_details.branch_city}` : ''}</div>
                     ) : (
                       <div>Bank: <strong>{w.payout_details.bank_name}</strong> • A/C: <strong>{w.payout_details.bank_account_number}</strong> • IFSC: <strong>{w.payout_details.ifsc_code}</strong></div>
                     )}
-                    {w.utr_number && <div style={{ color: '#00E599', marginTop: '4px' }}>UTR: {w.utr_number}</div>}
+                    {w.utr_number && <div style={{ color: '#00E599', marginTop: '4px' }}>UTR / CDM Slip: {w.utr_number}</div>}
                   </div>
 
                   {/* Workflow Advancement Controls */}

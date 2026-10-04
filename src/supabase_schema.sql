@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS public.trustpay_wallet_networks (
 -- 3. Exchange Settings Table
 CREATE TABLE IF NOT EXISTS public.trustpay_exchange_settings (
     id INT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-    exchange_rate NUMERIC(10, 2) DEFAULT 107.00 NOT NULL,
+    exchange_rate NUMERIC(10, 2) DEFAULT 109.00 NOT NULL,
     minimum_deposit NUMERIC(18, 4) DEFAULT 500.0000 NOT NULL,
     processing_target VARCHAR(100) DEFAULT 'Approximately 15 minutes' NOT NULL,
     platform_fee_percent NUMERIC(5, 2) DEFAULT 0.00 NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS public.trustpay_deposits (
 CREATE TABLE IF NOT EXISTS public.trustpay_withdrawals (
     id VARCHAR(64) PRIMARY KEY, -- e.g. TP-WTH-000456
     user_id UUID NOT NULL REFERENCES public.trustpay_users(id) ON DELETE CASCADE,
-    method VARCHAR(20) NOT NULL CHECK (method IN ('UPI', 'IMPS')),
+    method VARCHAR(20) NOT NULL CHECK (method IN ('UPI', 'IMPS', 'CDM')),
     amount_usdt NUMERIC(18, 4) NOT NULL CHECK (amount_usdt > 0),
     amount_inr NUMERIC(18, 2) NOT NULL CHECK (amount_inr > 0),
     exchange_rate NUMERIC(10, 2) NOT NULL,
@@ -135,7 +135,7 @@ CREATE INDEX IF NOT EXISTS idx_trustpay_notif_user_id ON public.trustpay_notific
 -- Initial Data Seeding
 -- ==========================================================
 INSERT INTO public.trustpay_exchange_settings (id, exchange_rate, minimum_deposit, processing_target, platform_fee_percent, updated_at)
-VALUES (1, 107.00, 500.00, 'Approximately 15 minutes', 0.00, NOW())
+VALUES (1, 109.00, 500.00, 'Approximately 15 minutes', 0.00, NOW())
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.trustpay_wallet_networks (id, network_name, network_standard, asset, wallet_address, active, explorer_base_url, confirmations_required, icon_name)
