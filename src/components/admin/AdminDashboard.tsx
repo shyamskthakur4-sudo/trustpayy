@@ -408,25 +408,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
                 </div>
               </div>
 
-              {/* Credentials reminder */}
-              <div
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid var(--tp-border-subtle)',
-                  borderRadius: 'var(--tp-radius-sm)',
-                  padding: '8px 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '11px',
-                  color: 'var(--tp-text-muted)',
-                }}
-              >
-                <span>Configured ID:</span>
-                <span className="tp-num" style={{ color: 'var(--tp-emerald)', fontWeight: 700 }}>
-                  12345678 • Pass: 1598
-                </span>
-              </div>
 
               {/* Submit Button */}
               <button
